@@ -1,0 +1,99 @@
+Ejercicios Punto 3
+
+Redirección y piping
+1. Crear un archivo conteniendo la salida del comando ls
+
+	#ls > archivo.txt
+
+2. Crear un archivo conteniendo la salida del comando ls -lR /tmp
+
+	# ls -IR /tmp > arctmp.txt
+
+3. Obtener las cinco primeras líneas del archivo anterior
+
+	# head -5 arctmp.txt
+
+4. Crear un archivo conteniendo las cinco primeras líneas y las cinco últimas del archivo generado en 2
+
+	# tail -5 arctmp.txt
+
+5. Crear un archivo conteniendo las primeras cinco líneas de la salida del comando ls -lR /tmp
+
+	# head -5 arctmp.txt > newtmp.txt
+	# tail -5 arctmp.txt >> newtmp.txt
+
+6. Usando el anterior, crear un archivo conteniendo esas líneas, numeradas
+
+	# cat newtmp.txt | awk '1 {print NR, $0}' > fintmp.txt
+
+7. Crear un archivo conteniendo las últimas cinco líneas de la salida del comando ls -lR /tmp
+
+	# ls -IR /tmp | tail -5 > arctail.txt
+
+Variables, ambiente
+1. Asignar e imprimir el contenido de dos variables
+
+	# a=Hola; b=Mundo; echo "$a $b"
+
+2. Asignar dos variables, imprimir sus valores, intercambiar sus valores, imprimirlos
+
+	# a=Hola; b=Mundo; echo "$a $b"; c=$a; a=$b; b=$c; echo "$a $b"
+
+3. Crear un script que imprima un valor que será pasado como argumento
+
+	#!/bin/bash
+	# Scrip que imprime un valor pasado como argumento
+	#
+	echo "Imprimo Argumento: $1"
+
+4. Crear un script que imprima dos valores que serán pasados como argumento
+
+	#!/bin/bash
+	# Scrip que imprime un valor pasado como argumento
+	#
+	echo "Imprimo mi primer Argumento: $1 y el Segundo: $2"
+
+5. Crear un script que imprima todos los valores que le sean pasados como argumento
+
+	#! /bin/bash
+	# Scrip para imprimir variables
+	#
+	echo "La cantidad de argumentos ingresados son: $#"
+	P=1;
+	for i in $@; do
+	        echo "El argumento $P contiene $i";
+	let  P++;
+	done
+
+Sentencias de control
+1. Imprimir cinco veces "Linux"
+
+#! /bin/bash
+for i in `seq 1 5`; do
+        echo "LINUX";
+done
+
+2. Imprimir cinco veces el contenido de una variable
+
+PP=HOLA
+for i in `seq 1 5'; do
+	echo $PP
+done 
+
+3. Imprimir los números de 0 a 5
+
+
+
+4. Imprimir los dígitos de -1 a 6
+5. Imprimir los números de 0 a 99
+6. Imprimir junto al nombre de cada archivo en el directorio actual, su tamaño y su fecha de modificación
+
+ls -l | awk '1 { print  $9 " " $5 " " $6 " " $7" " $8 }'
+
+7. Copiar los archivos terminados en .txt en archivos con igual nombre pero extensión .bak
+8. Renombrar los archivos con extensión .tex que comienzan en ASA reemplazando la partícula ASA
+con RII
+9. Para cada archivo modificado hace más de cinco días en un directorio, mostrar su cantidad de
+líneas
+Las secuencias a continuación son ilustrativas. Se recomienda seguir paso a paso, comprendiendo
+cabalmente cada orden. Incluyendo la interpretación del por qué de los errores mostrados.
