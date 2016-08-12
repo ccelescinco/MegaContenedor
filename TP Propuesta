@@ -10,3 +10,7 @@ Utilización de WGET
 Fuente: http://www.linuxtotal.com.mx/?cont=info_admon_017
 
 wget -np -c -nd -N -A .pdf http://pages.cs.wisc.edu/~remzi/OSTEP/ -P pdfs
+
+Tambien podemos utilizar una lista, previamente ordenada para poder armar mas facil la union de pdf
+
+wget -i lista.txt o con un scrip (me gusta mas esta ultima opción, de esta forma podemos controlar lo que bajamos con un nombre en particular.
