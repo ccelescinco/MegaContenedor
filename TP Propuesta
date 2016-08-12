@@ -1,6 +1,8 @@
 Utilización de WGET
   
     [-nd] indica no crear subdirectorios para cada archivo descargado, es decir, todo nos lo deja en el mismo lugar.
+    [-r] Recursivo
+    [-O] permite modificar el nombre de los archivos.
     [-N] conserva la fecha y hora (timestamp) del archivo original que se descargue, de otro modo pondría la fecha y hora de nuestro sistema.
     [-np] no parent, no seguir enlaces a directorios superiores, solo del actual y uno hacía abajo, por -r -l1
     [-A.mp3] -A indica a wget el tipo de archivo a descargar solamente, en este caso solo "mp3".
@@ -9,7 +11,7 @@ Utilización de WGET
     [-i sitiosmp3.txt] el archivo con la lista (hecha a tu gusto, con unos cuantos o decenas de sitios de música) de los sitios desde donde buscar "mp3" y descargarlos.
 Fuente: http://www.linuxtotal.com.mx/?cont=info_admon_017
 
-wget -np -c -nd -N -A .pdf http://pages.cs.wisc.edu/~remzi/OSTEP/ -P pdfs
+wget -r -np -c -nd -N -A .pdf http://pages.cs.wisc.edu/~remzi/OSTEP/ -P pdfs
 
 Tambien podemos utilizar una lista, previamente ordenada para poder armar mas facil la union de pdf
 
