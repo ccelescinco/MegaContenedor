@@ -7,7 +7,6 @@ DirTempo=/tmp/file$((RANDOM))
 cfg=accesobkp.cfg
 Destino=$HOME/bkp
 #
-#
 ##################### Funciones #####################
 #
 function FileSelect {
@@ -26,8 +25,13 @@ function FileSelect {
 }
 #
 ##################### Inicio #####################
-# Verifico si estoy pre-configurado en accesobkp.cfg y Destino del Respaldo
+# Verifico si estoy pre-configurado en accesobkp.cfg y si esta Zenity Instalado
 #
+dpkg -l | grep zenity &> /dev/null
+if [ "$?" != "0" ] ; then
+  echo "No Puedo ejecutarme, por falta de zenity.... Instale y vuelva a ejecutar!!"
+  exit 2
+fi
 if [ ! -f $cfg ]; then
   zenity --title "Que hago..." --info --text="Script para realizar copias de seguridad de los archivos que elegias a la carpeta $Destino."
   FileSelect
