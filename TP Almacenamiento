@@ -36,3 +36,27 @@ de archivos?
 archivos?
 
 10) Desarrolle un script que ubique potenciales archivos dispersos en un directorio. 
+
+#############################
+# ASA - 2016 - Almacenamiento
+#############################
+
+NOTA: estos prácticos son COMPLEMENTARIOS a la ejercitación propuesta en el 
+apunte de cátedra. 
+
+NOTA: utilice loop devices para probar en el laboratorio.  
+
+1) Crear un dispositivo md LINEAR, RAID 0, RAID 1, RAID5 y RAID10
+
+2) Armar una tabla comparativa de LINEAR, RAID 0, RAID 1, RAID 5 y RAID10
+con al menos: 
+	Tolerancia a fallos 
+	Performance de lectura 
+	Performance de escritura 
+	Mínima cantidad de discos necesarios.
+	Porcentaje de espacio utilizable para datos 
+
+3) ¿Dónde se almacena la información acerca del array? 
+
+4) ¿Es posible trasladar un array entre dos máquinas? ¿Qué se necesita? Escriba
+un procedimeinto y realice la prueba. 
