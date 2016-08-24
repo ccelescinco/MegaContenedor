@@ -7,7 +7,7 @@ blecida con el fin de obtener un backup periódico de todos sus contenidos.
   2. Preparar un script con interfaz gráfica que presente los cinco directorios con mayor ocupación de
 almacenamiento dentro del home del usuario.
 
-  Resolución: 
+  Resolución: accesodir.sh
   
   3. Preparar un script con interfaz gráfica que permita escalar en un 50tamaño de un conjunto de
 imágenes seleccionadas en un navegador de archivos a su elección.
