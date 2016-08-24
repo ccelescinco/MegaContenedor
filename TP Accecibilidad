@@ -2,7 +2,7 @@ Ejercitación propuesta
   1. Preparar un script con interfaz gráfica para copiar archivos seleccionados a una carpeta preesta-
 blecida con el fin de obtener un backup periódico de todos sus contenidos.
 
-  Resolución: 
+  Resolución: accesobkp.sh
   
   2. Preparar un script con interfaz gráfica que presente los cinco directorios con mayor ocupación de
 almacenamiento dentro del home del usuario.
