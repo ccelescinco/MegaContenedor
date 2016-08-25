@@ -12,7 +12,12 @@ de entrada.
 2) Crear en una tabla de particiones tipo MBR (IBM PC) sobre un dispositivo 
 loop. Copiar la tabla de particiones a un archivo, destruir la tabla anterior
 y restaurarla. Escriba el procedimiento paso a paso. Observe el cambio del 
-contenido del dispositivo antes y después (hexdump) 
+contenido del dispositivo antes y después (hexdump)
+
+Creo tabla de particiones con parted /dev/loop0
+mklabel msdos mkpart p ext3 0 
+
+Copio el mbr con 
 
 3) Crear una tabla de particiones tipo GPT. Destruir la tabla principal y 
 restaurarla del backup que la misma establece.  
