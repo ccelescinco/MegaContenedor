@@ -1,0 +1,35 @@
+Ejercitación propuesta
+  1. Preparar un script con interfaz gráfica para copiar archivos seleccionados a una carpeta preesta-
+blecida con el fin de obtener un backup periódico de todos sus contenidos.
+
+  Resolución: accesobkp.sh
+  
+  2. Preparar un script con interfaz gráfica que presente los cinco directorios con mayor ocupación de
+almacenamiento dentro del home del usuario.
+
+  Resolución: accesodir.sh
+  
+  3. Preparar un script con interfaz gráfica que permita escalar en un 50tamaño de un conjunto de
+imágenes seleccionadas en un navegador de archivos a su elección.
+
+  Resolución: accesonautilus.sh
+
+Configuración para utilizar Nautilus
+
+Puede ser que necesita el siguiente item
+
+sudo apt-get install python-nautilus 
+
+    /home/usuario/.gnome2/nautilus-scripts
+
+Ahora solo resta darle permisos de ejecucion a todos estos, para ello hacemos asi:
+
+    chmod -R a+x /home/usuario/.gnome2/nautilus-scripts
+
+Tambien puede ser: /home/tu-usuario/.local/share/nautilus/scripts
+
+
+
+
+  
+
