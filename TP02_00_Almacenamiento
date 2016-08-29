@@ -4,11 +4,13 @@
 
 0) Reproducir en una terminal paso a paso la secuencia de comandos presentada
 en el apunte de cátedra para Loop devices (página 15). 
-
+   ok
 1) Crear un script que genere n archivos de un tamaño fijo, y los asocie a 
 loop devices. El número de archivos y su tamaño deben recibirse como argumento
 de entrada. 
 
+   Resolución: creodisco.sh
+   
 2) Crear en una tabla de particiones tipo MBR (IBM PC) sobre un dispositivo 
 loop. Copiar la tabla de particiones a un archivo, destruir la tabla anterior
 y restaurarla. Escriba el procedimiento paso a paso. Observe el cambio del 
