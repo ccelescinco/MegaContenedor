@@ -86,7 +86,62 @@ Copio el mbr con:
 0a00000
 
 3) Crear una tabla de particiones tipo GPT. Destruir la tabla principal y 
-restaurarla del backup que la misma establece.  
+restaurarla del backup que la misma establece.
+
+  Creo la tabla de particiones:
+  
+  gparted /dev/loop0 mklabel gpt
+  gparted /dev/loop0 mkpart NombreParticion ext4 0 100%
+  
+  Disk /dev/loop0: 10,5MB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags: 
+
+Number  Start   End     Size    File system  Name  Flags
+ 1      17,4kB  10,5MB  10,5MB               p1
+
+Rompo la tabla de particiones los primeros 512b
+  dd if=/dev/zero of=/dev/loop0 bs=1024 count=1
+  
+  Disk /dev/loop0: 10,5MB
+Sector size (logical/physical): 512B/512B
+Partition Table: unknown
+Disk Flags:
+
+Utilizo la herramienta gdisk
+
+Partition table scan:
+  MBR: not present
+  BSD: not present
+  APM: not present
+  GPT: damaged
+
+Found invalid MBR and corrupt GPT. What do you want to do? (Using the
+GPT MAY permit recovery of GPT data.)
+ 1 - Use current GPT
+ 2 - Create blank GPT
+
+Elijo opcion 1 y salgo guardando los cambios con w
+
+al habrir nuevamente gdisk 
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+Desde parted
+
+  Disk /dev/loop0: 10,5MB
+  Sector size (logical/physical): 512B/512B
+  Partition Table: gpt
+  Disk Flags: 
+
+  Number  Start   End     Size    File system  Name  Flags
+   1      17,4kB  10,5MB  10,5MB               p1
+
 
 4) Discuta ¿Qué relación existe entre GPT/UEFI - MBR/BIOS? ¿Diferencias?
 
