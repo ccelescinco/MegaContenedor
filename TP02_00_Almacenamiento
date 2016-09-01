@@ -17,9 +17,73 @@ y restaurarla. Escriba el procedimiento paso a paso. Observe el cambio del
 contenido del dispositivo antes y después (hexdump)
 
 Creo tabla de particiones con parted /dev/loop0
-mklabel msdos mkpart p ext3 0 
+mklabel msdos mkpart p ext4 0 
 
-Copio el mbr con 
+Copio el mbr con:
+
+   dd if=/dev/loop0 of=/tmp/mbr bs=512 count=1
+
+   observo con hexdump /dev/loop0
+
+0000000 b8fa 1000 d08e 00bc b8b0 0000 d88e c08e
+0000010 befb 7c00 00bf b906 0200 a4f3 21ea 0006
+0000020 be00 07be 0438 0b75 c683 8110 fefe 7507
+0000030 ebf3 b416 b002 bb01 7c00 80b2 748a 8b01
+0000040 024c 13cd 00ea 007c eb00 00fe 0000 0000
+0000050 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001b0 0000 0000 0000 0000 5ba5 4522 0000 0000
+00001c0 0002 46fd 0105 0001 0000 4fff 0000 0000
+00001d0 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001f0 0000 0000 0000 0000 0000 0000 0000 aa55
+0000200 0000 0000 0000 0000 0000 0000 0000 0000
+*
+0a00000
+
+   y hexdump /tmp/loop0 
+
+0000000 b8fa 1000 d08e 00bc b8b0 0000 d88e c08e
+0000010 befb 7c00 00bf b906 0200 a4f3 21ea 0006
+0000020 be00 07be 0438 0b75 c683 8110 fefe 7507
+0000030 ebf3 b416 b002 bb01 7c00 80b2 748a 8b01
+0000040 024c 13cd 00ea 007c eb00 00fe 0000 0000
+0000050 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001b0 0000 0000 0000 0000 5ba5 4522 0000 0000
+00001c0 0002 46fd 0105 0001 0000 4fff 0000 0000
+00001d0 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001f0 0000 0000 0000 0000 0000 0000 0000 aa55
+0000200
+
+   dd if=/dev/zero of=/dev/loop0 bs=512 count=1
+   hexdump /dev/loop0
+
+0000000 0000 0000 0000 0000 0000 0000 0000 0000
+*
+0a00000
+
+   Recupero el MBR
+
+   dd if=/tmp/loop0 of=/dev/loop0 bs=512 count=1
+   hexdump /dev/loop0
+
+0000000 b8fa 1000 d08e 00bc b8b0 0000 d88e c08e
+0000010 befb 7c00 00bf b906 0200 a4f3 21ea 0006
+0000020 be00 07be 0438 0b75 c683 8110 fefe 7507
+0000030 ebf3 b416 b002 bb01 7c00 80b2 748a 8b01
+0000040 024c 13cd 00ea 007c eb00 00fe 0000 0000
+0000050 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001b0 0000 0000 0000 0000 5ba5 4522 0000 0000
+00001c0 0002 46fd 0105 0001 0000 4fff 0000 0000
+00001d0 0000 0000 0000 0000 0000 0000 0000 0000
+*
+00001f0 0000 0000 0000 0000 0000 0000 0000 aa55
+0000200 0000 0000 0000 0000 0000 0000 0000 0000
+*
+0a00000
 
 3) Crear una tabla de particiones tipo GPT. Destruir la tabla principal y 
 restaurarla del backup que la misma establece.  
@@ -30,11 +94,14 @@ restaurarla del backup que la misma establece.
 modificaría el fstab para lograr que esta ISO se monte automáticamente en 
 cada booteo?
 
+
 6) Crear un archivo de 100Mb utilizando fallocate y dd, tome el tiempo de ambos y compare. 
 
 7) Crear un archivo disperso (sparse file). Observe el tamaño reportado por ls 
 y por du. ¿Qué sucede al realizar una copia de dicho archivo? Observe la
 opción --apparent-size de du.
+
+
 
 8) ¿Es posible crear un archivo disperso mayor al espacio libre en el sistema
 de archivos?
