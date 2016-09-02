@@ -1,6 +1,6 @@
-###########################
-# Ejercicios de la Materia#
-###########################
+############################
+# Ejercicios de la Materia #
+############################
 
 Creo archivo con Ceros
 dd if=/dev/zero of=archivo bs=1024 count1024
