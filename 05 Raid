@@ -1,0 +1,16 @@
+Utilizando loopdevice!!
+
+dd if=/dev/zero of=raid1disco1 bs=1M count=10
+dd if=/dev/zero of=raid1disco2 bs=1M count=10
+
+losetup --find --show raid1disco1
+losetup --find --show raid1disco2
+losetup -a
+
+fdsik creo la tabla de particiones 
+
+Creando el Raid
+
+mdadm --create /dev/md0 --level=1 --raid-device=2 /dev/loop0 /dev/loop1
+
+watch cat /proc/mdstat (para ver la actualización de la creación del raid)
