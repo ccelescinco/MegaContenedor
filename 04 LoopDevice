@@ -1,0 +1,73 @@
+###########################
+# Ejercicios de la Materia#
+###########################
+
+Creo archivo con Ceros
+dd if=/dev/zero of=archivo bs=1024 count1024
+
+ls -lh archivo
+-rw-r--r-- 1 root root 1,0M sep  2 12:41 archivo
+
+Monto con loopdevice el archivo
+losetup /dev/loop0 archivo 
+
+losetup -a
+
+/dev/loop0: [2050]:26214825 (/home/ccelescinco/Documentos/MegaContenedor/archivo)
+
+Creo Sistema de Archivos sobre el loop0
+mkfs -t ext3 /dev/loop0
+
+mkdir /tmp/loop
+
+mount -o loop /dev/loop0 /tmp/loop
+
+Reviso el tamaño del disco con df
+df -h /tmp/loop
+
+Monto el loop
+mount -o loop /dev/loop0 /tmp/loop/
+
+df -h /tmp/loop
+
+Verifico el contenido del loop0
+
+ls -l /tmp/loop
+total 12
+drwx------ 2 root root 12288 sep  2 12:48 lost+found
+
+Envio un listado al loop0
+ls / > /tmp/loop/archivo.txt
+
+ls -l /tmp/loop
+total 13
+-rw-r--r-- 1 root root   153 sep  2 13:01 archivo.txt
+drwx------ 2 root root 12288 sep  2 12:48 lost+found
+
+df -h /tmp/loop/
+S.ficheros     Tamaño Usados  Disp Uso% Montado en
+/dev/loop1      1003K    18K  934K   2% /tmp/loop
+
+
+Agrando el archivo, con los modificadores oflag y conv, agrgando 1mb+
+
+dd if=/dev/zero of=archivo bs=1024 count=1024 oflag=append conv=notrunc
+1024+0 registros leídos
+1024+0 registros escritos
+1048576 bytes (1,0 MB, 1,0 MiB) copied, 0,00146617 s, 715 MB/s
+
+ls -lh archivo 
+-rw-r--r-- 1 root root 2,0M sep  2 13:07 archivo
+
+Actualizo el losetup
+losetup -c /dev/loop0
+losetup -a
+
+Desmonto el disco para redimencionar filesistem y posterior la particion
+unmount /tmp/loop0
+e2fsck -fp /dev/loop0
+resize2fs /dev/loop0
+
+mount -o loop /dev/loop0 /tmp/loop
+
+
