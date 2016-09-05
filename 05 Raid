@@ -14,3 +14,79 @@ Creando el Raid
 mdadm --create /dev/md0 --level=1 --raid-device=2 /dev/loop0 /dev/loop1
 
 watch cat /proc/mdstat (para ver la actualización de la creación del raid)
+
+mkfs -t ext3 /dev/md0
+mkdir carpeta (destino para montar)
+mount  -t ext3 /dev/md0 carpeta (montaje)
+
+
+mdadm --examine --brief --scan --config=partitions (Muestra los Disco RAID Activos?)
+
+mdadm --examine /dev/loop0 (Permite ver el estado del disco)
+
+mdadm --query --detail /dev/md0 (Ver estado del RAID)
+
+########################################
+
+Alertas /root/NombreArchivo
+
+	#!/bin/bash
+	echo $(date) $* >> /root/alert
+
+chmod a+x /root/NombreArchivo
+
+mdadm --monitor -1 --scan --config=partitions --program=/root/NombreArchivo
+
+/etc/mdadm.conf
+DEVICE=/dev/sdb1 /dev/sdc1
+ARRAY=/dev/md0 devices=/dev/sdb1,/dev/sdc1
+PROGRAM=/root/NombreArchivo
+
+crontab -e
+MAILTO=""
+*/2 * * * * /sbin/mdadm --monitor -1 --scan
+
+#################################################
+Reemplazo de Disco (Para probar)
+
+
+
+#################################################
+Parar un Array
+mdadm -S /dev/md0
+
+Aramar el Array nuevamente
+mdadm -A /dev/md0 /dev/loop0 /dev/loop1
+
+Temas de práctica
+
+1. ¿Qué marcas, modelos y precios de tarjetas controladoras RAID puede encontrar? ¿Con qué ca-
+pacidades?
+
+	
+
+2. ¿Qué diferencias hay entre Software RAID y Hardware RAID?
+
+3. ¿Qué niveles RAID ofrecen redundancia? ¿Contra qué eventos protege esta redundancia? ¿Contra
+qué eventos
+no
+protege esta redundancia?
+4. El uso de un dispositivo RAID, ¿es un reemplazo efectivo para las políticas y actividades de backup?
+5. ¿Cuáles niveles RAID ofrecen mejor velocidad de trabajo? ¿De qué factores depende la ventaja en
+performance de los diferentes niveles RAID entre sí y con respecto al uso de una única unidad de
+disco?
+6. ¿Cuál es la diferencia entre los niveles Linear RAID y RAID 0? ¿Qué clase de redundancia ofrece
+cada uno? ¿Contra qué eventos protege?
+7. Preparar un arreglo linear RAID sobre dos dispositivos loop. Observe qué relación tiene el espacio
+disponible en el dispositivo con los archivos que soportan los dispositivos loop.
+8. Preparar un arreglo linear RAID sobre dos discos extra agregados al equipo.
+9. Preparar un arreglo RAID nivel 0 sobre dos discos extra agregados al equipo.
+10. ¿Puede medir la diferencia en performance entre los dispositivos de los ejercicios anteriores, de
+linear RAID y de nivel 0? ¿Tiene sentido esta medición cuando el equipo es una máquina virtual?
+11. Preparar un RAID nivel 1 sobre dos discos extra. Inyectar un fallo en uno de los discos. Agregar
+un nuevo disco e incorporarlo al RAID. Observar la sincronización del dispositivo.
+12. Como antes, preparar un RAID nivel 1 sobre dos discos extra, pero con una unidad
+spare
+. Inyectar
+un fallo en uno de los discos y observar el comportamiento del dispositivo.
+
