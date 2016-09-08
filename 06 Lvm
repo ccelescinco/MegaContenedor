@@ -1,24 +1,62 @@
-############################
+﻿############################
 # Ejercicios de la Materia #
 ############################
+	Para toda la practica se va a trabajar con un Soft RAID1 50M /dev/md0 y un loopdevice de 100MB en /dev/loop2p1
 
 1. Crear una partición, convertirla en PV, crear un VG y definir un LV lv0 dentro del mismo dejando un 25 %
 del espacio libre. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
 
+	Se va a trabajar sobre 1 disco RAID1 50MB
+	pvcreate /dev/md0 (Creo el primer Volumen físico)
+	pvdisplay veo la estructura
+	vgcreate vol1 /dev/md0
+	lvcreate -n lv01 -l 8 vol1
+
+	Crear sistema de archivo con mkfs.ext3 y posteriormente montar.
+
+
 2. Definir un nuevo LV lv1
 en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
 
-3. Crear otra partición en el mismo u otro medio de almacenamiento, convertirla en PV y adjuntarla
-al VG del ejercicio anterior. Examinar el resultado de las operaciones con los comandos de revisión
-correspondientes.
+	lvcreate -n lv02 -l 4 vol1
+	con lvdisplay veo la información de los volumen creados.
 
-4. Extender el LV lv1 para ocupar nuevamente la totalidad del espacio del VG extendido. Crear un
-filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
+3. Crear otra partición en el mismo u otro medio de almacenamiento, convertirla en PV y adjuntarla al VG del ejercicio anterior. Examinar el resultado de las operaciones con los comandos de revisión correspondientes.
 
-5. Modificar los tamaños de ambos LVs, extendiendo uno y reduciendo el otro. Recordar que al
-reducir un LV se debe primero reducir el filesystem alojado, y que para extender un filesystem se
-debe primero extender el LV que lo aloja. Comprobar que los filesystems alojados siguen siendo
-funcionales
+	pvcreate /dev/loop2p1
+	pvdisplay veo la información de ambos pv. El primero, el raid, ocupado al 100%.
+	vgextend vol1 /dev/loop2p1
+	vgdisplay
+
+  VG Name               vol1
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               1
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               144,00 MiB
+  PE Size               4,00 MiB
+  Total PE              36
+  Alloc PE / Size       12 / 48,00 MiB
+  Free  PE / Size       24 / 96,00 MiB
+  VG UUID               RB4m2R-0Xxj-JSLP-42Br-2Tvx-5PSM-yg9F23
+
+
+4. Extender el LV lv1 para ocupar nuevamente la totalidad del espacio del VG extendido. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
+
+	lvextend -l 28 /dev/vol1/lv02 (28 extend es la suma de los 4 del lv viejo + los 24 del nuevo lv)
+	Creo un sistema de archivos mkfs.ext3 /dev/vol1/lv02
+5. Modificar los tamaños de ambos LVs, extendiendo uno y reduciendo el otro. Recordar que al reducir un LV se debe primero reducir el filesystem alojado, y que para extender un filesystem se debe primero extender el LV que lo aloja. Comprobar que los filesystems alojados siguen siendo funcionales.
+
+	
+
 
 6. Supongamos que, al querer crear un snapshot de un LV, el administrador recibe un mensaje de
 error diciendo que el VG no cuenta con espacio disponible. Sugiera un método para enfrentar este
