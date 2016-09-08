@@ -1,0 +1,35 @@
+dministración de sistemas avanzada 
+Trabajo práctico grupal 
+Entrega obligatoria para cursado
+*************************************
+
+Condiciones: 
+------------
+El siguiente trabajo pueden entregarse hasta el 31/10. 
+Deberá realizarse en grupos de no mas de cuatro personas y no menos de dos. 
+
+Descripción:
+------------ 
+Elija un script de al menos 100 líneas contenido en el paquete mdadm ó en el
+paquete lvm2. Analice el script y responda las preguntas. 
+
+La siguiente línea puede ser de _ayuda_ para encontrar los scripts. Para el
+caso de lvm2 reemplace donde corresponda: 
+
+for i in `dpkg -L mdadm`;do file $i ;done |egrep 'shell|text' |grep -v doc |cut -f1 -d: |xargs wc -l |sort -n
+
+Cuestionario:
+=============
+¿Cuál es la funcionalidad del script?
+¿Quién es el/la/l@s usuarios destinatarios del script?
+¿Qué shell se utiliza para el script?
+¿Existe algún tipo de modularización? (funciones o llamadas a otros scripts) 
+¿Cuál es la licencia?
+¿Quién es el/la/l@s autor/a/es/s del script?
+¿Existe alguna porción del script que le parezca re-utilizable?
+¿Qué verificaciones previas a la ejecución de la función principal realiza? 
+
+Evaluación:
+===========
+Entrega grupal (documentar las respuestas por escrito), evaluación individual y grupal.  
+

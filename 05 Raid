@@ -63,30 +63,86 @@ Temas de práctica
 1. ¿Qué marcas, modelos y precios de tarjetas controladoras RAID puede encontrar? ¿Con qué ca-
 pacidades?
 
-	
+    Marca: HP		Modelo: P830			Precio:		Capacidades: Soporta hasta 16HDD Sata/SAS; RAID 0,1,5,6,10,50,60,10 ADM PCIExpress 8x, 4Gb Cache Exclusivo para servidores HP
+   Marca: Dell		Modelo: PERC H710 Mini Mono	Precio: ~$30000	Capacidades: Soporta hasta 32HDD Sata/SAS; RAID 0,1,5,6,10,50,60 PCIeXpress 2.0 512M Cache. Exclusivo para servidores DELL
+
+   Marca: Fujitsu	Modelo: D2626			Precio: ~$6000	Capacidades: Soporta hasta 8HDD; RAID 0,1,5,6 PCIeXpress 8x con soporte opcional de bateria. Cache 512Mb
 
 2. ¿Qué diferencias hay entre Software RAID y Hardware RAID?
 
+   El software Raid, tiene la ventaja de mejor flexibilidad al momento de un fallo, no depende de una controladora para rearmar el RAID, mas que nada cuando la controladora falla. Es una alternativa mas economica y con los equipos actuales podría hasta tener mejor rendimiento.
+
+   El hardward Raid, tiene la ventaja que el RaID se ve como una sola unidad ante el sistema operativo.
+
 3. ¿Qué niveles RAID ofrecen redundancia? ¿Contra qué eventos protege esta redundancia? ¿Contra
-qué eventos
-no
-protege esta redundancia?
+qué eventos no protege esta redundancia?
+
+	RAID 1:	Minimo 2 Discos, Redundancia contra 1 disco. No proteje de falla de ambos discos. Mejora rendimiento de lectura, pero no de escritura
+	RAID 5: Minimo 3 Discos, Redundancia contra 1 disco, No proteje de falla de 2 discos o mas. Mejora rendimineto de lectura, ante la posibilidad de alta carga escritura baja el rendimiento. Mejora el espacio total del raid.
+	RAID 6: Minimo 4 Discos, Redundancia contra falla hasta 2 discos. Cuanto mas discos es mas eficiente. Tiene doble paridad.
+	RAID 10: Minimo 4 Discos, Redundancia hasta 1 disco por RAID 1 (Hasta 2 Disco). No proteje cuando fallan 2 discos del mismo RAID 1. Tiene mas capaciad al duplicar los RAID 1 mejorando el rendimiento de lectura/escritur. Se aconseja para base de datos.
+
 4. El uso de un dispositivo RAID, ¿es un reemplazo efectivo para las políticas y actividades de backup?
+
+	El uso de RAID no es un reemplazo de las politicas de backup, solo permite la alta disponibilidad de datos.
+
 5. ¿Cuáles niveles RAID ofrecen mejor velocidad de trabajo? ¿De qué factores depende la ventaja en
 performance de los diferentes niveles RAID entre sí y con respecto al uso de una única unidad de
 disco?
+
+	Los RAID que ofrecen mejor rendimiento lectura / escritura en RAID 1 y 10, ya que la lectura se hace en 2 discos y la escritura se evita el bit de paridad. Los factores del rendimiento depende mucho a la tecnologia de Hardaware y del RAID elegido.
+
 6. ¿Cuál es la diferencia entre los niveles Linear RAID y RAID 0? ¿Qué clase de redundancia ofrece
 cada uno? ¿Contra qué eventos protege?
+	La diferencia entre Linear RAID a medida que se llena los discos pasa al siguiente como un unico disco grande, en cambio RAID 0 escribe en bloque de datos en los discos que pertenece al RAID. Los RAID Linear y 0 no ofrecen redundancia alguna, solo nos permiten amplicar la capacidad de datos de los discos. El RAID 0 mejora en performance con respecto a Linear ya que puede estar leyendo y escribiendo en todos los discos a la vez.
+
 7. Preparar un arreglo linear RAID sobre dos dispositivos loop. Observe qué relación tiene el espacio
 disponible en el dispositivo con los archivos que soportan los dispositivos loop.
+
+	mdadm --create /dev/md0 --level=linear --raid-device=2 /dev/loop0p1 /dev/loop1p1
+	parted /dev/md0 (Crear las particiones)
+	mkfs.ext3 /dev/md0 (Formateo la nueva partición)
+	mount -t ext3 /dev/md0 /tmp/raid
+	mdadm --detail /dev/md0 (detalles del raid)
+	mdadm --examine /dev/loop0p1 (detalle del disco)
+
+	Para revisar los Archivos!! du -h archivo
+	Para revisar los dispositivos o particion montada!! df -h /dev/md0
+
+	Al copiar un archivo cualquiera, el disco que surgio cambio fué el primero.
+
 8. Preparar un arreglo linear RAID sobre dos discos extra agregados al equipo.
+
+	mdadm --grow --add /dev/md0 /dev/loop2p1
+	mdadm --detail /dev/md0
+	e2fsck -f /dev/md0 (chequear el disco)
+	resize2fs /dev/md0 (Amplia espacio)
+
 9. Preparar un arreglo RAID nivel 0 sobre dos discos extra agregados al equipo.
+
+	Al copiar un archivo cualquiera, se repartió la carga en los dos discos.
+
+	Para agrandar el dispositivo en RAID 0
+	mdadm --grow /dev/md0 --level=0 --raid-device=3 /dev/loop2p1
+
 10. ¿Puede medir la diferencia en performance entre los dispositivos de los ejercicios anteriores, de
 linear RAID y de nivel 0? ¿Tiene sentido esta medición cuando el equipo es una máquina virtual?
+
+	Se puede medir con time cp. No tiene sentido con los discos virtuales ya que está escribiendo y leyendo en el mismo  disco fisico.
+
 11. Preparar un RAID nivel 1 sobre dos discos extra. Inyectar un fallo en uno de los discos. Agregar
 un nuevo disco e incorporarlo al RAID. Observar la sincronización del dispositivo.
+
 12. Como antes, preparar un RAID nivel 1 sobre dos discos extra, pero con una unidad
 spare
 . Inyectar
 un fallo en uno de los discos y observar el comportamiento del dispositivo.
 
+13. Retire el disco fallado y compruebe en qué estado queda el dispositivo.
+14. Vuelva a agregar el disco y compruebe en qué estado queda el dispositivo.
+15. ¿Con qué comandos se investiga el estado de un dispositivo RAID? ¿Cómo se sabe cuándo un
+dispositivo RAID está activo o en modo degradado? ¿Cómo se sabe cuándo un dispositivo está
+fallado, activo, sincronizando?
+16. ¿Cuál es la forma de convertir en dispositivo RAID 1 un filesystem ya existente?
+17. ¿Cómo se puede adaptar el comportamiento de un RAID 1 a una situación con discos asimétricos
+(uno más rápido que el otro)?
