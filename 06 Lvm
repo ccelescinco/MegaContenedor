@@ -1,1 +1,28 @@
- dd
+############################
+# Ejercicios de la Materia #
+############################
+
+1. Crear una partición, convertirla en PV, crear un VG y definir un LV lv0 dentro del mismo dejando un 25 %
+del espacio libre. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
+
+2. Definir un nuevo LV lv1
+en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
+
+3. Crear otra partición en el mismo u otro medio de almacenamiento, convertirla en PV y adjuntarla
+al VG del ejercicio anterior. Examinar el resultado de las operaciones con los comandos de revisión
+correspondientes.
+
+4. Extender el LV lv1 para ocupar nuevamente la totalidad del espacio del VG extendido. Crear un
+filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
+
+5. Modificar los tamaños de ambos LVs, extendiendo uno y reduciendo el otro. Recordar que al
+reducir un LV se debe primero reducir el filesystem alojado, y que para extender un filesystem se
+debe primero extender el LV que lo aloja. Comprobar que los filesystems alojados siguen siendo
+funcionales
+
+6. Supongamos que, al querer crear un snapshot de un LV, el administrador recibe un mensaje de
+error diciendo que el VG no cuenta con espacio disponible. Sugiera un método para enfrentar este
+problema usando LVM.
+
+7. Dado un LV, poner en práctica las técnicas de creación de snapshot para a) obtener un backup, y
+b) realizar modificaciones sobre el LV volviendo después al estado original.
