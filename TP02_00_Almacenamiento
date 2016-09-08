@@ -1,6 +1,6 @@
-#############################
-# ASA - 2016 - Almacenamiento
-#############################
+###############################
+# ASA - 2016 - Almacenamiento #
+###############################
 
 0) Reproducir en una terminal paso a paso la secuencia de comandos presentada
 en el apunte de cátedra para Loop devices (página 15). 
@@ -202,9 +202,9 @@ archivos?
 
 10) Desarrolle un script que ubique potenciales archivos dispersos en un directorio. 
 
-#############################
-# ASA - 2016 - Almacenamiento
-#############################
+###############################
+# ASA - 2016 - Almacenamiento #
+###############################
 
 NOTA: estos prácticos son COMPLEMENTARIOS a la ejercitación propuesta en el 
 apunte de cátedra. 
@@ -215,13 +215,21 @@ NOTA: utilice loop devices para probar en el laboratorio.
 
 2) Armar una tabla comparativa de LINEAR, RAID 0, RAID 1, RAID 5 y RAID10
 con al menos: 
-	Tolerancia a fallos 
-	Performance de lectura 
-	Performance de escritura 
-	Mínima cantidad de discos necesarios.
-	Porcentaje de espacio utilizable para datos 
+
+	Tolerancia a fallos:
+	Performance de lectura:
+	Performance de escritura:
+	Mínima cantidad de discos necesarios:
+	Porcentaje de espacio utilizable para datos:
+
 
 3) ¿Dónde se almacena la información acerca del array? 
 
 4) ¿Es posible trasladar un array entre dos máquinas? ¿Qué se necesita? Escriba
-un procedimeinto y realice la prueba. 
+un procedimeinto y realice la prueba.
+
+	Con Software array, es posible, solo se necesita tener instalado o incluido en el kernel los paquetes de mdadm.
+	El procedimiento no es muy complejo.
+	Una vez iniciado el equipo, con los discos instalado fisicamente, se debe instalar el mdadm con apt-get update; apt-get install mdadm.
+	Posteriormente con solo escribir los siguientes comandos: mdamd --examine /dev/disco1, donde disco1 es el disco fisico, para saber la información del tipo de array, de cuantas unidades pertenecen al array y saber el orden del array que pertenece el disco. Posteriormente seguir con los otros discos.
+	Luego armar el array con mdadm --asemble /dev/md0 /dev/disco1 /dev/disco2 /dev/discoN
