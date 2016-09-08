@@ -149,20 +149,56 @@ Desde parted
 modificaría el fstab para lograr que esta ISO se monte automáticamente en 
 cada booteo?
 
+vi /etc/fstab
+
+    /directorio/archivo.iso /mnt/iso iso9660 loop 0 0
 
 6) Crear un archivo de 100Mb utilizando fallocate y dd, tome el tiempo de ambos y compare. 
+
+  time dd if=/dev/zero of=time1 bs=1M count=100
+  100+0 registros leídos
+  100+0 registros escritos
+  104857600 bytes (105 MB, 100 MiB) copied, 0,103541 s, 1,0 GB/s
+
+  real	0m0.118s
+  user	0m0.000s
+  sys	0m0.080s
+
+  time fallocate -l 100M disco4
+
+  real	0m0.031s
+  user	0m0.000s
+  sys	0m0.000s
+
+Chequeo con ls -lh archivo y con du -h archivo y en ambos caso tengo 100MB. Con filefrag archivo, obtengo: 
+   1 extent found
 
 7) Crear un archivo disperso (sparse file). Observe el tamaño reportado por ls 
 y por du. ¿Qué sucede al realizar una copia de dicho archivo? Observe la
 opción --apparent-size de du.
 
+  dd if=/dev/zero of=archivo bs=1 seek=100000000 count=0
+
+  ls -lh archivo, me presenta un archivo de 96Mb, con du -h archivo me muestra un archivo de 0Mb. Con --apparent-size me muestar como resultado que tiene 96Mb
+
+   du -h --apparent-size archivo
+   96M	archivo
 
 
 8) ¿Es posible crear un archivo disperso mayor al espacio libre en el sistema
 de archivos?
 
+   Si es posible, ya que el archivo real no ocupa tal espacio.
+
 9) ¿Es posible crear un archivo disperso mayor al tamaño total del sistema de 
 archivos?
+
+   Si es posible, ya que el archivo real no ocupa tal espacio.
+
+   df -h /dev/loop1
+   S.ficheros     Tamaño Usados  Disp Uso% Montado en
+   /dev/loop1        20M   1,2M   18M   7% /tmp/loop
+
 
 10) Desarrolle un script que ubique potenciales archivos dispersos en un directorio. 
 
