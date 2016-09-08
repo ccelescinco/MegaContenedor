@@ -94,6 +94,7 @@ disco?
 
 6. ¿Cuál es la diferencia entre los niveles Linear RAID y RAID 0? ¿Qué clase de redundancia ofrece
 cada uno? ¿Contra qué eventos protege?
+
 	La diferencia entre Linear RAID a medida que se llena los discos pasa al siguiente como un unico disco grande, en cambio RAID 0 escribe en bloque de datos en los discos que pertenece al RAID. Los RAID Linear y 0 no ofrecen redundancia alguna, solo nos permiten amplicar la capacidad de datos de los discos. El RAID 0 mejora en performance con respecto a Linear ya que puede estar leyendo y escribiendo en todos los discos a la vez.
 
 7. Preparar un arreglo linear RAID sobre dos dispositivos loop. Observe qué relación tiene el espacio
@@ -133,16 +134,63 @@ linear RAID y de nivel 0? ¿Tiene sentido esta medición cuando el equipo es una
 11. Preparar un RAID nivel 1 sobre dos discos extra. Inyectar un fallo en uno de los discos. Agregar
 un nuevo disco e incorporarlo al RAID. Observar la sincronización del dispositivo.
 
+	mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/loop0p1 /dev/loop1p1
+	parted /dev/md0 (Crear las particiones)
+	mkfs.ext3 /dev/md0 (Formateo la nueva partición)
+	mount -t ext3 /dev/md0 /tmp/raid
+	mdadm --detail /dev/md0 (detalles del raid)
+	mdadm --examine /dev/loop0p1 (detalle del disco)
+
+	sfdisk -d /dev/loop1p1 | sfdisk /dev/loop2p1 (Podemos copiar tabla de particiones, en disco nuevo mas grande, hacer a mano las particiones y que al menos queden igual o mas grande)
+
+	mdadm /dev/md0 -f /dev/loop1p1 (Declaro un fallo en el disco)
+	mdadm --examine /dev/loop0p1 (Muestra la falla en el disco1)
+	mdadm --detail /dev/md0 (Muestra el estado y el fallo del RAID)
+	cat /proc/mdstat (otra forma de verl el fallo)
+
+	mdadm /dev/md0 --add  /dev/loop2p1 (Para agregar el disco nuevo)
+	cat /proc/mdstat (veo el progreso del recupero.. se puede utilizar watch)
+
+	mdadm /dev/md0 --remove /dev/loop1p1 (se puede agregar --manager posterior de mdadm)
+	mdadm --add /dev/md0 /dev/loop3p1 (Para agregar una unidad Spare)
+
 12. Como antes, preparar un RAID nivel 1 sobre dos discos extra, pero con una unidad
-spare
-. Inyectar
-un fallo en uno de los discos y observar el comportamiento del dispositivo.
+spare. Inyectar un fallo en uno de los discos y observar el comportamiento del dispositivo.
+
+	mdadm --add /dev/md0 /dev/loop3p1 (Para agregar una unidad Spare)
 
 13. Retire el disco fallado y compruebe en qué estado queda el dispositivo.
+
+	mdadm /dev/md0 --remove /dev/loop1p1 (se puede agregar --manager posterior de mdadm)
+
 14. Vuelva a agregar el disco y compruebe en qué estado queda el dispositivo.
-15. ¿Con qué comandos se investiga el estado de un dispositivo RAID? ¿Cómo se sabe cuándo un
-dispositivo RAID está activo o en modo degradado? ¿Cómo se sabe cuándo un dispositivo está
-fallado, activo, sincronizando?
+
+15. ¿Con qué comandos se investiga el estado de un dispositivo RAID? cat /proc/mdstat, mdadm --detail /dev/md0 y mdadm --examine /dev/loop0p1
+
+¿Cómo se sabe cuándo un dispositivo RAID está activo o en modo degradado? mdadm --detail /dev/md0
+¿Cómo se sabe cuándo un dispositivo está fallado, activo, sincronizando? cat /proc/mdstat
+
 16. ¿Cuál es la forma de convertir en dispositivo RAID 1 un filesystem ya existente?
+
+	Para convertir de raid 1 a Raid 5 se puede realizar los siguiente
+	desmontar y detener el raid
+	umount /dev/md0
+	mdadm --stop /dev/md0
+	mdadm --create /dev/md0 --level=5 --raid-device=2 /dev/loop0p1 /dev/loop1p1 (como crear nuevamente, detecta que ya tiene un fs y crea el raid)
+	mdadm -add /dev/mdo /dev/loop2p1 (Agregamos el 3 disco)
+	mdadm --grow /dev/md0 --raid-disk=3 --backup-file=/tmp/raid1_5.back
+	
+	Chequeamos el FS y redimencionamos
+	e2fsck -f /dev/md0
+	resize2fs -p /dev/md0
+
+	Actualizamos el /etc/mdadm
+	echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
+	mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+
 17. ¿Cómo se puede adaptar el comportamiento de un RAID 1 a una situación con discos asimétricos
 (uno más rápido que el otro)?
+
+	El comportamiento del RAID va a depender del disco mas lento, no aprovechando la velocidad del mas rápido.
+
+
