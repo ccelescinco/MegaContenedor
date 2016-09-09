@@ -63,11 +63,17 @@ Actualizo el losetup
 losetup -c /dev/loop0
 losetup -a
 
-Desmonto el disco para redimencionar filesistem y posterior la particion
+Desmonto el disco para redimencionar filesystem y posterior la particion
 unmount /tmp/loop0
-e2fsck -fp /dev/loop0
+e2fsck -fp /dev/loop0p1
 resize2fs /dev/loop0
 
 mount -o loop /dev/loop0 /tmp/loop
+
+Si tenemos una particion y no esta del tamaño correcto correr:
+
+e2fsck -fp /dev/loop0p1, si tira error en super bloque..
+mke2fa -n /dev/loop0p1 y regenera el superbloque
+
 
 
