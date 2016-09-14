@@ -155,3 +155,22 @@ con RII
 
 9. Para cada archivo modificado hace más de cinco días en un directorio, mostrar su cantidad de
 líneas
+
+
+Investigar el sistema
+=====================
+
+1. Modificar la salida del comando blkid para conocer el UUID, el nombre y tipo, y punto de montado,
+de cada dispositivo de bloques del sistema.
+
+2. Analizar archivos de log buscando conocimiento: duración de sesiones ssh por usuario, mensajes
+de mail entre usuarios, con histograma por tamaños, etc.
+
+	cat /var/log/auth* | grep Accepted | awk '{print $1 " " $2 "\t" $3 "\t" $11 "\t" $9 }'
+	
+
+3. Detectar momentos en que la salida de vmstat muestra picos de I/O, procesos corriendo, procesos
+en espera, uso de swap, etc.
+
+
+
