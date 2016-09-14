@@ -1,34 +1,35 @@
 ﻿############################
 # Ejercicios de la Materia #
 ############################
-	Para toda la practica se va a trabajar con un Soft RAID1 50M /dev/md0 y un loopdevice de 100MB en /dev/loop2p1
 
 1. Crear una partición, convertirla en PV, crear un VG y definir un LV lv0 dentro del mismo dejando un 25 %
 del espacio libre. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
 
-	Se va a trabajar sobre 1 disco RAID1 50MB
-	pvcreate /dev/md0 (Creo el primer Volumen físico)
+	Se va a trabajar sobre 1 disco 100MB
+	pvcreate /dev/loop0 (Creo el primer Volumen físico)
 	pvdisplay veo la estructura
-	vgcreate vol1 /dev/md0
-	lvcreate -n lv01 -l 8 vol1
+	vgcreate vg01 /dev/loop0
+	lvcreate -n lv01 -l 75%vg vol01
 
 	Crear sistema de archivo con mkfs.ext3 y posteriormente montar.
 
+	mkfds.ext3 /dev/vg01/lv01
 
-2. Definir un nuevo LV lv1
+2. Definir un nuevo LV lv02
 en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
 
-	lvcreate -n lv02 -l 4 vol1
+	lvcreate -n lv02 -l 100%FREE vg01
 	con lvdisplay veo la información de los volumen creados.
 
 3. Crear otra partición en el mismo u otro medio de almacenamiento, convertirla en PV y adjuntarla al VG del ejercicio anterior. Examinar el resultado de las operaciones con los comandos de revisión correspondientes.
 
 	pvcreate /dev/loop2p1
 	pvdisplay veo la información de ambos pv. El primero, el raid, ocupado al 100%.
-	vgextend vol1 /dev/loop2p1
+	vgextend vg01 /dev/loop1
 	vgdisplay
 
-  VG Name               vol1
+  --- Volume group ---
+  VG Name               vg01
   System ID             
   Format                lvm2
   Metadata Areas        2
@@ -37,30 +38,62 @@ en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
   VG Status             resizable
   MAX LV                0
   Cur LV                2
-  Open LV               1
+  Open LV               0
   Max PV                0
   Cur PV                2
   Act PV                2
-  VG Size               144,00 MiB
+  VG Size               192,00 MiB
   PE Size               4,00 MiB
-  Total PE              36
-  Alloc PE / Size       12 / 48,00 MiB
+  Total PE              48
+  Alloc PE / Size       24 / 96,00 MiB
   Free  PE / Size       24 / 96,00 MiB
-  VG UUID               RB4m2R-0Xxj-JSLP-42Br-2Tvx-5PSM-yg9F23
-
+  VG UUID               cRY6b2-NJv6-Pyef-Ydrg-iJt1-LaAz-23DVow
 
 4. Extender el LV lv1 para ocupar nuevamente la totalidad del espacio del VG extendido. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
 
-	lvextend -l 28 /dev/vol1/lv02 (28 extend es la suma de los 4 del lv viejo + los 24 del nuevo lv)
-	Creo un sistema de archivos mkfs.ext3 /dev/vol1/lv02
+	lvextend -l +100%FREE /dev/vg01/lv01
+
+	lvextend -l 28 /dev/vol1/lv02 (28 extend es la suma de los 4 del lv viejo + los 24 del nuevo lv -- Otra alternativa)
+
 5. Modificar los tamaños de ambos LVs, extendiendo uno y reduciendo el otro. Recordar que al reducir un LV se debe primero reducir el filesystem alojado, y que para extender un filesystem se debe primero extender el LV que lo aloja. Comprobar que los filesystems alojados siguen siendo funcionales.
 
-	
+En estos momentos contamos con lv01 de 168Mb y lv02 de 24Mb sobre 2 disco de 100M c/u
+
+	resize2fs /dev/vg01/lv01 115M
+	e2fsck -f /dev/vg01/lv01
+	resize2fs /dev/vg01/lv01 115M
+
+Ahora realizamos la redimension del volumen
+
+	lvreduce /dev/vg01/lv01 -L 120M o
+
+	lvresize -r -L 120M /dev/vg01/lv01
+
+	resize2fs /dev/vg01/lv01 (Vuelvo a redimensionar para ocupar el 100% de la partición)
+
+Luego Montamos. Posteriormente realizamos la redimension del otro lv
+
+	lvresize -l +100%FREE /dev/vg01/lv02
 
 
 6. Supongamos que, al querer crear un snapshot de un LV, el administrador recibe un mensaje de
 error diciendo que el VG no cuenta con espacio disponible. Sugiera un método para enfrentar este
 problema usando LVM.
 
+Vamos a suponer que tenemos un disco fisco o pv de 500Gb en un vg llamado group y con un solo VolumenLogico lv01 de la totalidad del disco. En el lv01 tiene un 50% libre de espacio.
+
+1ro. Reduceria el lv01
+	resize2fs /dev/group/lv01 420G
+	e2fsck -f /dev/group/lv01
+	resize2fs /dev/group/lv01 420G
+	lvreduce /dev/group/lv01 -L 440G
+	resize2fs /dev/group/lv01 
+2do. Teniendo 60G libres en el VG, creo el snap
+	lvcreate -s -n snap -l 100%FREE group
+3ro. En caso de querer remover el snap
+	lvremove group/snap
+
 7. Dado un LV, poner en práctica las técnicas de creación de snapshot para a) obtener un backup, y
 b) realizar modificaciones sobre el LV volviendo después al estado original.
+
+
