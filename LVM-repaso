@@ -1,0 +1,285 @@
+hrisar-HP-Pavilion-Notebook tmp # dd if=/dev/zero of=disco1 bs=1M count=500
+500+0 registros leídos
+500+0 registros escritos
+524288000 bytes (524 MB) copiados, 4,86591 s, 108 MB/s
+chrisar-HP-Pavilion-Notebook tmp # dd if=/dev/zero of=disco2 bs=1M count=500
+500+0 registros leídos
+500+0 registros escritos
+524288000 bytes (524 MB) copiados, 2,75742 s, 190 MB/s
+chrisar-HP-Pavilion-Notebook tmp # dd if=/dev/zero of=disco3 bs=1M count=500
+500+0 registros leídos
+500+0 registros escritos
+524288000 bytes (524 MB) copiados, 4,3022 s, 122 MB/s
+chrisar-HP-Pavilion-Notebook tmp # losetup /dev/loop1 disco1
+chrisar-HP-Pavilion-Notebook tmp # losetup /dev/loop2 disco2
+chrisar-HP-Pavilion-Notebook tmp # losetup /dev/loop3 disco3
+chrisar-HP-Pavilion-Notebook tmp # losetup -a
+/dev/loop1: [0807]:1179905 (/tmp/disco1)
+/dev/loop2: [0807]:1179906 (/tmp/disco2)
+/dev/loop3: [0807]:1179907 (/tmp/dis
+
+Para cada disco:
+
+chrisar-HP-Pavilion-Notebook tmp # parted /dev/loop3
+GNU Parted 2.3
+Usando /dev/loop3
+¡Bienvenido/a a GNU Parted! Teclee «help» para ver la lista de órdenes.
+(parted) mklabel GPT                                                      
+(parted) mkpart                                                           
+¿Nombre de la partición?  []? lvm3                                        
+¿Tipo de sistema de ficheros?  [ext2]? ext2                               
+¿Inicio? 0                                                                
+¿Fin? 100%                                                                
+Aviso: La partición resultante no está debidamente alineada para el mejor 
+rendimiento.
+Descartar/Ignore/Cancelar/Cancel? i                                       
+(parted) quit                                                             
+Información: Puede que sea necesario actualizar /etc/fstab. 
+
+
+chrisar-HP-Pavilion-Notebook tmp # losetup -a
+/dev/loop1: [0807]:1179905 (/tmp/disco1)
+/dev/loop2: [0807]:1179906 (/tmp/disco2)
+/dev/loop3: [0807]:1179907 (/tmp/disco3)
+chrisar-HP-Pavilion-Notebook tmp # partprobe
+chrisar-HP-Pavilion-Notebook tmp # ls /dev
+
+
+chrisar-HP-Pavilion-Notebook tmp # pvs
+chrisar-HP-Pavilion-Notebook tmp # pvdisplay
+chrisar-HP-Pavilion-Notebook tmp # pvcreate /dev/loop1p1
+  Physical volume "/dev/loop1p1" successfully created
+chrisar-HP-Pavilion-Notebook tmp # pvs
+  PV           VG   Fmt  Attr PSize   PFree  
+  /dev/loop1p1      lvm2 a--  499,97m 499,97m
+chrisar-HP-Pavilion-Notebook tmp # pvdisplay
+  "/dev/loop1p1" is a new physical volume of "499,97 MiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/loop1p1
+  VG Name               
+  PV Size               499,97 MiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               BlGnP1-vRpx-w3TH-Av9d-Nu4R-kgbU-HjyltV
+   
+chrisar-HP-Pavilion-Notebook tmp # vgcreate vg01 /dev/loo1p1
+  Device /dev/loo1p1 not found (or ignored by filtering).
+  Unable to add physical volume '/dev/loo1p1' to volume group 'vg01'.
+chrisar-HP-Pavilion-Notebook tmp # vgcreate vg01 /dev/loop1p1
+  Volume group "vg01" successfully created
+chrisar-HP-Pavilion-Notebook tmp # vgs
+  VG   #PV #LV #SN Attr   VSize   VFree  
+  vg01   1   0   0 wz--n- 496,00m 496,00m
+chrisar-HP-Pavilion-Notebook tmp # vgdispaly
+No se ha encontrado la orden «vgdispaly», quizás quiso decir:
+ La orden «vgdisplay» del paquete «lvm2» (main)
+vgdispaly: no se encontró la orden
+chrisar-HP-Pavilion-Notebook tmp # vgdisplay
+  --- Volume group ---
+  VG Name               vg01
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               496,00 MiB
+  PE Size               4,00 MiB
+  Total PE              124
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       124 / 496,00 MiB
+  VG UUID               9eH295-ZwBP-HGEl-akOT-A1uY-9orE-AftH8c
+   
+chrisar-HP-Pavilion-Notebook tmp # lvcreate -n lv-home -L 500M vg0
+  Volume group "vg0" not found
+chrisar-HP-Pavilion-Notebook tmp # lvcreate -n lv-home -L 500M vg01
+  Volume group "vg01" has insufficient free space (124 extents): 125 required.
+chrisar-HP-Pavilion-Notebook tmp # lvcreate -n lv-home -L 400M vg01
+  Logical volume "lv-home" created
+chrisar-HP-Pavilion-Notebook tmp # lvs
+  LV      VG   Attr      LSize   Pool Origin Data%  Move Log Copy%  Convert
+  lv-home vg01 -wi-a---- 400,00m                                           
+chrisar-HP-Pavilion-Notebook tmp # lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg01/lv-home
+  LV Name                lv-home
+  VG Name                vg01
+  LV UUID                V6aaz4-cd4J-epM7-ma2P-sShr-0OpT-w5Ojat
+  LV Write Access        read/write
+  LV Creation host, time chrisar-HP-Pavilion-Notebook, 2016-09-29 11:25:31 -0300
+  LV Status              available
+  # open                 0
+  LV Size                400,00 MiB
+  Current LE             100
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+   
+chrisar-HP-Pavilion-Notebook tmp # vgdisplay
+  --- Volume group ---
+  VG Name               vg01
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               496,00 MiB
+  PE Size               4,00 MiB
+  Total PE              124
+  Alloc PE / Size       100 / 400,00 MiB
+  Free  PE / Size       24 / 96,00 MiB
+  VG UUID               9eH295-ZwBP-HGEl-akOT-A1uY-9orE-AftH8c
+
+
+chrisar-HP-Pavilion-Notebook tmp # lvs
+  LV      VG   Attr      LSize   Pool Origin Data%  Move Log Copy%  Convert
+  lv-home vg01 -wi-ao--- 500,00m                                           
+chrisar-HP-Pavilion-Notebook tmp # lvs
+  LV      VG   Attr      LSize   Pool Origin Data%  Move Log Copy%  Convert
+  lv-home vg01 -wi-ao--- 500,00m                                           
+chrisar-HP-Pavilion-Notebook tmp # pvs
+  PV           VG   Fmt  Attr PSize   PFree  
+  /dev/loop1p1 vg01 lvm2 a--  496,00m      0 
+  /dev/loop2p1 vg01 lvm2 a--  496,00m 492,00m
+chrisar-HP-Pavilion-Notebook tmp # lvs
+  LV      VG   Attr      LSize   Pool Origin Data%  Move Log Copy%  Convert
+  lv-home vg01 -wi-ao--- 500,00m                                           
+chrisar-HP-Pavilion-Notebook tmp # vgs
+  VG   #PV #LV #SN Attr   VSize   VFree  
+  vg01   2   1   0 wz--n- 992,00m 492,00m
+chrisar-HP-Pavilion-Notebook tmp # lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg01/lv-home
+  LV Name                lv-home
+  VG Name                vg01
+  LV UUID                V6aaz4-cd4J-epM7-ma2P-sShr-0OpT-w5Ojat
+  LV Write Access        read/write
+  LV Creation host, time chrisar-HP-Pavilion-Notebook, 2016-09-29 11:25:31 -0300
+  LV Status              available
+  # open                 1
+  LV Size                500,00 MiB
+  Current LE             125
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+   
+chrisar-HP-Pavilion-Notebook tmp # df -h /dev/vg01/lv-home 
+S.ficheros                Tamaño Usados  Disp Uso% Montado en
+/dev/mapper/vg01-lv--home   477M    22M  430M   5% /tmp/mihome
+chrisar-HP-Pavilion-Notebook tmp # lvextend -l +25 /dev/vg01/lv-home 
+  Extending logical volume lv-home to 600,00 MiB
+  Logical volume lv-home successfully resized
+chrisar-HP-Pavilion-Notebook tmp # lvs
+  LV      VG   Attr      LSize   Pool Origin Data%  Move Log Copy%  Convert
+  lv-home vg01 -wi-ao--- 600,00m                                           
+chrisar-HP-Pavilion-Notebook tmp # df -h 
+S.ficheros                Tamaño Usados  Disp Uso% Montado en
+udev                        2,7G   4,0K  2,7G   1% /dev
+tmpfs                       548M   1,6M  547M   1% /run
+/dev/sda7                    66G    59G  4,3G  94% /
+none                        4,0K      0  4,0K   0% /sys/fs/cgroup
+none                        5,0M      0  5,0M   0% /run/lock
+none                        2,7G   8,2M  2,7G   1% /run/shm
+none                        100M    20K  100M   1% /run/user
+/dev/sda1                   256M    71M  186M  28% /boot/efi
+/dev/mapper/vg01-lv--home   477M    22M  430M   5% /tmp/mihome
+chrisar-HP-Pavilion-Notebook tmp # resize2fs /dev/vg01/lv-home 
+resize2fs 1.42.9 (4-Feb-2014)
+Filesystem at /dev/vg01/lv-home is mounted on /tmp/mihome; on-line resizing required
+old_desc_blocks = 2, new_desc_blocks = 3
+The filesystem on /dev/vg01/lv-home is now 614400 blocks long.
+
+chrisar-HP-Pavilion-Notebook tmp # df -h 
+S.ficheros                Tamaño Usados  Disp Uso% Montado en
+udev                        2,7G   4,0K  2,7G   1% /dev
+tmpfs                       548M   1,6M  547M   1% /run
+/dev/sda7                    66G    59G  4,3G  94% /
+none                        4,0K      0  4,0K   0% /sys/fs/cgroup
+none                        5,0M      0  5,0M   0% /run/lock
+none                        2,7G   8,2M  2,7G   1% /run/shm
+none                        100M    20K  100M   1% /run/user
+/dev/sda1                   256M    71M  186M  28% /boot/efi
+/dev/mapper/vg01-lv--home   574M    22M  523M   4% /tmp/mihome
+chrisar-HP-Pavilion-Notebook tmp # lvdisplays
+No se ha encontrado la orden «lvdisplays», quizás quiso decir:
+ La orden «lvdisplay» del paquete «lvm2» (main)
+lvdisplays: no se encontró la orden
+chrisar-HP-Pavilion-Notebook tmp # lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg01/lv-home
+  LV Name                lv-home
+  VG Name                vg01
+  LV UUID                V6aaz4-cd4J-epM7-ma2P-sShr-0OpT-w5Ojat
+  LV Write Access        read/write
+  LV Creation host, time chrisar-HP-Pavilion-Notebook, 2016-09-29 11:25:31 -0300
+  LV Status              available
+  # open                 1
+  LV Size                600,00 MiB
+  Current LE             150
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+   
+chrisar-HP-Pavilion-Notebook tmp # lvextend -r -l 200 /dev/vg01/lv-home
+  Extending logical volume lv-home to 800,00 MiB
+  Logical volume lv-home successfully resized
+resize2fs 1.42.9 (4-Feb-2014)
+Filesystem at /dev/mapper/vg01-lv--home is mounted on /tmp/mihome; on-line resizing required
+old_desc_blocks = 3, new_desc_blocks = 4
+The filesystem on /dev/mapper/vg01-lv--home is now 819200 blocks long.
+
+chrisar-HP-Pavilion-Notebook tmp # lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/vg01/lv-home
+  LV Name                lv-home
+  VG Name                vg01
+  LV UUID                V6aaz4-cd4J-epM7-ma2P-sShr-0OpT-w5Ojat
+  LV Write Access        read/write
+  LV Creation host, time chrisar-HP-Pavilion-Notebook, 2016-09-29 11:25:31 -0300
+  LV Status              available
+  # open                 1
+  LV Size                800,00 MiB
+  Current LE             200
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+   
+chrisar-HP-Pavilion-Notebook tmp # df -h 
+S.ficheros                Tamaño Usados  Disp Uso% Montado en
+udev                        2,7G   4,0K  2,7G   1% /dev
+tmpfs                       548M   1,6M  547M   1% /run
+/dev/sda7                    66G    59G  4,3G  94% /
+none                        4,0K      0  4,0K   0% /sys/fs/cgroup
+none                        5,0M      0  5,0M   0% /run/lock
+none                        2,7G   8,2M  2,7G   1% /run/shm
+none                        100M    20K  100M   1% /run/user
+/dev/sda1                   256M    71M  186M  28% /boot/efi
+/dev/mapper/vg01-lv--home   767M    22M  709M   3% /tmp/mihome
+chrisar-HP-Pavilion-Notebook tmp # 
+
+
+
