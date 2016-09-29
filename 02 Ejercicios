@@ -1,0 +1,77 @@
+############################
+# Ejercicios de la Materia #
+############################
+
+Investigar el sistema
+1. Modificar la salida del comando blkid para conocer el UUID, el nombre y tipo, y punto de montado,
+de cada dispositivo de bloques del sistema.
+
+2. Analizar archivos de log buscando conocimiento: duración de sesiones ssh por usuario, mensajes
+de mail entre usuarios, con histograma por tamaños, etc.
+
+3. Detectar momentos en que la salida de vmstat muestra picos de I/O, procesos corriendo, procesos
+en espera, uso de swap, etc.
+
+Recuperar espacio de almacenamiento
+1. Encontrar los diez archivos más grandes en un directorio y sus hijos, imprimirlos junto con su tamaño de mayor a menor.
+
+find ~/ -type f -exec ls -ls {} \; | awk '{print $6"\t"$10}' | sort -k1 -n -r | head -n 10
+
+2. Encontrar los diez archivos más grandes en un directorio y sus hijos, moverlos a otro directorio
+(en otro filesystem).
+
+3. Encontrar los diez archivos más grandes del sistema, imprimir el nombre de usuario dueño.
+
+4. Agregar al script anterior el envío de notificación por mail al usuario responsable.
+
+5. Encontrar archivos en directorios de usuario con la cadena “cache” en su nombre e imprimir el uso
+de disco de cada uno.
+
+6. Idem, enviando nombres a un archivo y usándolo como lista para borrarlos, comprimirlos o mover-
+los
+
+
+Networking
+1. Disparar un aviso cuando se pierde la conectividad a un conjunto de nodos de la red.
+
+2. Analizar la salida del comando netstat para descubrir en qué momento aparece un nuevo puerto abierto y a qué aplicación corresponde.
+
+3. Obtener un log de tráfico y obtener orígenes máximos y mínimos de tráfico, cantidades totales de bytes traficados por interfaz, etc.
+
+4. Recoger estadísticas de espacio en disco, cantidad de procesos, carga de CPU, en diferentes nodos de la red, y centralizarlos en un nodo monitor que presente los resultados.
+
+Seguridad
+1. Detener el script si la identidad del proceso corresponde a root.
+2. Solicitar información confidencial (como claves) con video inhibido.
+3. Capturar señales para impedir la interrupción del script por BREAK o fallos de ejecución.
+4. Utilizar MD5/SHAx para confirmar integridad de archivos.
+Tratamiento de datos
+1. Revisar el uso de los comandos cut, join, sort, uniq, comm.
+2. Crear script que administra una base de datos en formato CSV.
+3. Dado un archivo con una lista de direcciones IP, adjuntarles la resolución inversa de nombres
+correspondiente.
+4. Crear un histograma de accesos por nombre de dominio, a partir de los paquetes registrados en
+un archivo de log generado por iptables.
+5. Dada una base de datos CSV implementar búsqueda por expresiones regulares.
+6. Dada una base de datos CSV implementar proyección sobre un conjunto de campos dados.
+7. Convertir un listado de individuos PDF en archivo CSV.
+8. Preparar un conjunto de scripts con un único punto de entrada para el administrador. Estos scripts
+mantendrán un conjunto de bases de datos en formato CSV:
+alumnos: UID, Username, Apellido, Nombres, NoLegajo, Activo
+materias: MID, Nombre, Carrera, Docente
+cursadas: UID, MID, Ano, Cuatrimestre
+El dato Activo es booleano. Con estas bases de datos:
+Listar todas las materias asignadas a un mismo docente.
+Listar todas las materias cursadas por un alumno.
+Listar todos los alumnos activos inscriptos en una materia.
+Listar todos los alumnos que cursan una misma carrera dada durante un año dado.
+
+Listar todos los alumnos, agrupados por materia cursada, dentro de cada año.
+Listar todos los alumnos de un mismo docente.
+Dado un alumno por su legajo, consultar su estado Activo/Inactivo.
+Para aquellos alumnos que hace más de tres años que no se inscriben en ninguna cursada,
+pasar su dato Activo a falso (Inactivo).
+Generar un par de archivos en el formato de /etc/passwd y /etc/shadow para todos los
+alumnos activos.
+Generar un directorio /home/usuario para cada alumno activo, con UID correspondiente
+
