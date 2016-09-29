@@ -6,10 +6,10 @@
 del espacio libre. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
 
 	Se va a trabajar sobre 1 disco 100MB
-	pvcreate /dev/loop0 (Creo el primer Volumen físico)
+	pvcreate /dev/loop0p1 (Creo el primer Volumen físico)
 	pvdisplay veo la estructura
-	vgcreate vg01 /dev/loop0
-	lvcreate -n lv01 -l 75%vg vol01
+	vgcreate vg01 /dev/loop0p1
+	lvcreate -n lv01 -l 75%vg vg01
 
 	Crear sistema de archivo con mkfs.ext3 y posteriormente montar.
 
@@ -25,7 +25,7 @@ en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
 
 	pvcreate /dev/loop2p1
 	pvdisplay veo la información de ambos pv. El primero, el raid, ocupado al 100%.
-	vgextend vg01 /dev/loop1
+	vgextend vg01 /dev/loop1p1
 	vgdisplay
 
   --- Volume group ---
@@ -48,6 +48,11 @@ en el mismo VG creado anteriormente, ocupando la totalidad del espacio del VG.
   Alloc PE / Size       24 / 96,00 MiB
   Free  PE / Size       24 / 96,00 MiB
   VG UUID               cRY6b2-NJv6-Pyef-Ydrg-iJt1-LaAz-23DVow
+
+Extender VG
+
+	vgextend vg01 /dev/loop1p1
+
 
 4. Extender el LV lv1 para ocupar nuevamente la totalidad del espacio del VG extendido. Crear un filesystem sobre el LV, montarlo y utilizarlo para administrar archivos.
 
@@ -81,19 +86,44 @@ error diciendo que el VG no cuenta con espacio disponible. Sugiera un método pa
 problema usando LVM.
 
 Vamos a suponer que tenemos un disco fisco o pv de 500Gb en un vg llamado group y con un solo VolumenLogico lv01 de la totalidad del disco. En el lv01 tiene un 50% libre de espacio.
-
-1ro. Reduceria el lv01
+1ro.A Desmontar la particion
+1ro.B Reduceria el lv01
 	resize2fs /dev/group/lv01 420G
 	e2fsck -f /dev/group/lv01
 	resize2fs /dev/group/lv01 420G
 	lvreduce /dev/group/lv01 -L 440G
-	resize2fs /dev/group/lv01 
+	resize2fs /dev/group/lv01
+	Montar particion
+
 2do. Teniendo 60G libres en el VG, creo el snap
-	lvcreate -s -n snap -l 100%FREE group
+	lvcreate -s -n snap -l 100%FREE /dev/group/lv01
+
 3ro. En caso de querer remover el snap
 	lvremove group/snap
 
 7. Dado un LV, poner en práctica las técnicas de creación de snapshot para a) obtener un backup, y
 b) realizar modificaciones sobre el LV volviendo después al estado original.
 
+a) Disponiendo de espacio realizamos las siguientes operaciones
+	lvcreate -s -n snap -l 100%FREE /dev/vg/group
+	mkdir /tmp/snap 
+	mount /dev/vg/snap /tmp/snap #montamos el snap
+	tar -cvf tarfile.tar /tmp/snap/ .
 
+b) 
+	lvcreate -s -n snap -l 100%FREE /dev/vg01/group
+	desmontar el sistema original y reemplazar por el snap
+	realizamos las modificaciones sobre el original, y luego nos arrempentimos
+	lvconvert --merge ID Snap
+	En caso de ser satifactorias eliminar el snap
+
+
+En caso de necesitar restaurar un lvm en otro equipo, se debe prosegir con los siguientes pasos:
+
+	vgchange -a y (Para dejar activas los lvm)
+	lvscan
+	fsck /dev/vg/lv
+	Luego montar tradicionalmente.
+	
+En caso de ser automatico modificar el /etc/fstab
+	/dev/vg01/lv01 /mnt ext4 defaults 0 0
